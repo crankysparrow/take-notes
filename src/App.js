@@ -3,18 +3,14 @@ import './App.css';
 
 var para1 = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Imperdiet nulla malesuada pellentesque elit eget gravida cum sociis. Vitae auctor eu augue ut lectus arcu. Suscipit tellus mauris a diam maecenas sed. Nunc scelerisque viverra mauris in aliquam sem. In hendrerit gravida rutrum quisque. Aliquam malesuada bibendum arcu vitae. Sed cras ornare arcu dui vivamus arcu felis. Eget lorem dolor sed viverra ipsum nunc. Ut pharetra sit amet aliquam id diam. Venenatis urna cursus eget nunc scelerisque. Quis auctor elit sed vulputate mi. Lobortis scelerisque fermentum dui faucibus in ornare. Et magnis dis parturient montes nascetur ridiculus mus mauris. Ut morbi tincidunt augue interdum. Viverra accumsan in nisl nisi scelerisque eu. Turpis egestas sed tempus urna et pharetra pharetra. Gravida arcu ac tortor dignissim convallis.';
 var para2 = 'Mauris rhoncus aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque. Viverra orci sagittis eu volutpat odio facilisis. Blandit cursus risus at ultrices mi tempus. Nunc mattis enim ut tellus elementum. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor. Augue eget arcu dictum varius duis at consectetur. Metus dictum at tempor commodo ullamcorper a. Nec feugiat in fermentum posuere urna nec tincidunt praesent. Arcu dictum varius duis at consectetur. Libero justo laoreet sit amet cursus. Libero justo laoreet sit amet cursus sit amet dictum.';
-const notesList = [
+var notesList = [
   {
     info: para1,
-      // <div>
-      //   <p>Lobortis nibh lobortis diam, quis dui nostra sem pretium conubia.</p><p>Suscipit facilisis vitae nisi pulvinar sagittis risus dui curae; nulla.</p><p>Tempus augue, tellus volutpat aliquam curabitur tincidunt dis curabitur curabitur?</p><p>Justo suspendisse lacus leo parturient praesent gravida, mattis maecenas mollis.</p><p>Nascetur interdum urna risus lobortis himenaeos duis sociosqu augue vitae.</p>
-      // </div>,
+    id: 0,
   },
   {
     info: para2,
-      // <div>
-      //   <p>Claydol simipour bisharp sewaddle hitmontop seismitoad. Cacturne gothitelle caterpie vigoroth pawniard munchlax tornadus scyther tynamo zapdos. Spinda cottonee lapras nincada igglybuff sewaddle. Kingler moltres ledian chinchou empoleon hitmonchan beartic lillipup machamp wingull turtwig zweilous. Starly mantine jirachi raikou; leafeon aipom vanillish nidorino dialga vibrava? Plusle karrablast voltorb emolga beldum snubbull gabite sneasel cottonee bronzor bulbasaur barboach. Piplup tirtouga eelektross gurdurr, blaziken lillipup. Donphan aron, trubbish elekid quilava gorebyss. Lileep kangaskhan corsola jellicent victini vigoroth riolu samurott entei. Gothitelle, bronzor flygon and. Golurk sceptile chikorita cottonee piloswine!</p><p>Bibarel reuniclus mantyke luxray spinarak clefairy garchomp anorith turtwig spheal sudowoodo. Banette darmanitan dwebble lucario aron regigigas fraxure dratini piloswine cherubi lickitung shinx. Aron dunsparce luvdisc landorus elgyem abomasnow snivy seel carnivine. Exeggutor zangoose goldeen onix rhydon granbull torchic sawk swadloon duskull probopass slowpoke. Metagross crobat, jolteon jolteon carnivine. Riolu pikachu frillish groudon victreebel noctowl rhyperior duskull hydreigon bayleef ambipom roserade. Sentret sawk, sunkern butterfree togekiss a regigigas?</p>
-      // </div>,
+    id: 1,
   },
 ];
 
@@ -30,23 +26,31 @@ class App extends Component {
       notesList,
       firstType,
       textValue: '',
+      currentID: -1,
     }
 
     this.onType = this.onType.bind(this);
     this.newButton = this.newButton.bind(this);
+    this.displayNote = this.displayNote.bind(this);
   }
 
 
   onType(event) {
     let list = this.state.notesList;
 
-    if (this.state.firstType){
-      let newNote = {};
+    if (this.state.currentID === -1){
+      let id = list.length;
+      let newNote = {id: id,};
       list.push(newNote);
-      this.setState({firstType: false});
+      this.setState({currentID: id});
     }
 
-    list[list.length-1].info = event.target.value;
+    for (let item of list) {
+      if (item.id === this.state.currentID){
+        item.info = event.target.value;
+      }
+    }
+
     this.setState({ 
       textValue: event.target.value, 
       notesList: list ,
@@ -56,7 +60,14 @@ class App extends Component {
   newButton(){
     this.setState({
       textValue: '',
-      firstType: true,
+      currentID: -1,
+    })
+  }
+
+  displayNote(item){
+    this.setState({
+      textValue: item.info,
+      currentID: item.id,
     })
   }
 
@@ -73,8 +84,16 @@ class App extends Component {
 
         <div className="row">
           <div className="col-4 border-right">
-            <List list={this.state.notesList} />
+            <div className="notes d-flex flex-column">
+              {this.state.notesList.map(item => 
+                <div className="note mt-1 p-1 border rounded"
+                  onClick={() => this.displayNote(item)}>
+                  {item.info}
+                </div>
+              )}
+            </div>
           </div>
+          
           <div className="col">
             <textarea className="text form-control" 
               value={this.state.textValue} 
@@ -96,10 +115,11 @@ const Button = ({ onClick, className='', children }) =>
     {children}
     </button>
 
-const List = ({list}) => 
+const List = ({list, onNoteClick}) => 
   <div className="notes d-flex flex-column">
     {list.map(item => 
-      <div className="note mt-1 p-1 border rounded">
+      <div className="note mt-1 p-1 border rounded"
+        onClick={() => onNoteClick(item)}>
       {item.info}
       </div>
     )}
