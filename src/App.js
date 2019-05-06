@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
 import './App.css';
 
-var para1 = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Imperdiet nulla malesuada pellentesque elit eget gravida cum sociis. Vitae auctor eu augue ut lectus arcu. Suscipit tellus mauris a diam maecenas sed. Nunc scelerisque viverra mauris in aliquam sem. In hendrerit gravida rutrum quisque. Aliquam malesuada bibendum arcu vitae. Sed cras ornare arcu dui vivamus arcu felis. Eget lorem dolor sed viverra ipsum nunc. Ut pharetra sit amet aliquam id diam. Venenatis urna cursus eget nunc scelerisque. Quis auctor elit sed vulputate mi. Lobortis scelerisque fermentum dui faucibus in ornare. Et magnis dis parturient montes nascetur ridiculus mus mauris. Ut morbi tincidunt augue interdum. Viverra accumsan in nisl nisi scelerisque eu. Turpis egestas sed tempus urna et pharetra pharetra. Gravida arcu ac tortor dignissim convallis.';
-var para2 = 'Mauris rhoncus aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque. Viverra orci sagittis eu volutpat odio facilisis. Blandit cursus risus at ultrices mi tempus. Nunc mattis enim ut tellus elementum. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor. Augue eget arcu dictum varius duis at consectetur. Metus dictum at tempor commodo ullamcorper a. Nec feugiat in fermentum posuere urna nec tincidunt praesent. Arcu dictum varius duis at consectetur. Libero justo laoreet sit amet cursus. Libero justo laoreet sit amet cursus sit amet dictum.';
-var notesList = [
-  {
-    info: para1,
-    id: 0,
-  },
-  {
-    info: para2,
-    id: 1,
-  },
-];
+let notesList = JSON.parse(localStorage.getItem('list')) || [];
 
 let firstType = true;
+
+function getIDList(list) {
+  let res = [];
+  list.forEach(item => res.push(item.id));
+  return res;
+}
+
+var IDList = getIDList(notesList);
 
 
 class App extends Component {
@@ -26,34 +23,47 @@ class App extends Component {
       notesList,
       firstType,
       textValue: '',
+      IDList,
       currentID: -1,
     }
 
     this.onType = this.onType.bind(this);
     this.newButton = this.newButton.bind(this);
     this.displayNote = this.displayNote.bind(this);
+    this.deleteNote = this.deleteNote.bind(this);
   }
 
 
   onType(event) {
     let list = this.state.notesList;
+    let IDList = this.state.IDList;
+    let current = this.state.currentID;
 
-    if (this.state.currentID === -1){
+    if (current === -1){
       let id = list.length;
+      while (IDList.includes(id)){
+        id++;
+      }
       let newNote = {id: id,};
+      IDList.push(id);
       list.push(newNote);
-      this.setState({currentID: id});
+      current = id;
     }
 
     for (let item of list) {
-      if (item.id === this.state.currentID){
+      if (item.id === current){
         item.info = event.target.value;
       }
     }
 
+    localStorage.setItem('list', JSON.stringify(list));
+    console.log(localStorage);
+
     this.setState({ 
+      notesList: list,
+      currentID: current,
+      IDList: IDList,
       textValue: event.target.value, 
-      notesList: list ,
     });
   }
 
@@ -71,7 +81,28 @@ class App extends Component {
     })
   }
 
+  deleteNote(){
+    let list = this.state.notesList;
+    let IDList = this.state.IDList;
+    let id = this.state.currentID;
+
+    list = list.filter(item => 
+      item.id !== id);
+    
+    IDList = IDList.filter(num => num !== id);
+
+    localStorage.setItem('list', JSON.stringify(list));
+
+    this.setState({
+      IDList: IDList,
+      notesList: list,
+      textValue: '',
+      currentID: -1,
+    })
+  }
+
   render() {
+    console.log(this.state.IDList);
     return (
       <div className="app container d-flex flex-column">
         
@@ -79,12 +110,14 @@ class App extends Component {
               <div className="col-auto">
                 <Button onClick={this.newButton} 
                 children='New Note' />
+                <Button onClick={this.deleteNote}
+                children='Delete Current Note' />
               </div>
         </div>
 
           <div className="row flex-grow-1">
 
-            <div className="col-4 border-right">
+            <div className="col-4 border-right px-0">
               <List onClick={this.displayNote}
                 list={this.state.notesList} />
             </div>
@@ -115,28 +148,10 @@ const TextEntry = ({value, onChange}) =>
     onChange={onChange}>
     </textarea>
 
-
-// const List = ({list, onNoteClick}) => 
-//   <div className="notes d-flex flex-column">
-//     {list.map(item => 
-//       <div className="note mt-1 p-1 border rounded"
-//         onClick={() => onNoteClick(item)}>
-//       {item.info}
-//       </div>
-//     )}
-//   </div>
-
-  // {this.state.notesList.map(item => 
-  //               <div className="note mt-1 p-1 border rounded"
-  //                 onClick={() => this.displayNote(item)}>
-  //                 {item.info}
-  //               </div>
-  //             )}
-
 const List = ({list, onClick}) =>
-  <div className = 'notes d-flex flex-column'>
+  <div className = 'notes d-flex flex-column px-0'>
     {list.map(item =>
-      <div className="note mt-1 p-1 border rounded"
+      <div className="note mt-1 mx-0 px-1 border-bottom"
         onClick={() => onClick(item)}>
         {item.info}
       </div>
