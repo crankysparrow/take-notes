@@ -73,36 +73,30 @@ class App extends Component {
 
   render() {
     return (
-      <div className="app container py-3">
-
-        <div className="row justify-content-end border-bottom">
-            <div className="col-auto">
-            <Button onClick={this.newButton} 
-          children='New Note' />
-          </div>
+      <div className="app container d-flex flex-column">
+        
+        <div className="row d-flex justify-content-end border-bottom py-2">
+              <div className="col-auto">
+                <Button onClick={this.newButton} 
+                children='New Note' />
+              </div>
         </div>
 
-        <div className="row">
-          <div className="col-4 border-right">
-            <div className="notes d-flex flex-column">
-              {this.state.notesList.map(item => 
-                <div className="note mt-1 p-1 border rounded"
-                  onClick={() => this.displayNote(item)}>
-                  {item.info}
-                </div>
-              )}
+          <div className="row flex-grow-1">
+
+            <div className="col-4 border-right">
+              <List onClick={this.displayNote}
+                list={this.state.notesList} />
             </div>
-          </div>
-          
-          <div className="col">
-            <textarea className="text form-control" 
-              value={this.state.textValue} 
-              onChange={this.onType}>
-            </textarea>
+            
+            <div className="col">
+                <TextEntry value={this.state.textValue}
+                  onChange={this.onType} />
+            </div>
+            
           </div>
         </div>
 
-      </div>
     );
   }
 }
@@ -115,15 +109,38 @@ const Button = ({ onClick, className='', children }) =>
     {children}
     </button>
 
-const List = ({list, onNoteClick}) => 
-  <div className="notes d-flex flex-column">
-    {list.map(item => 
-      <div className="note mt-1 p-1 border rounded"
-        onClick={() => onNoteClick(item)}>
-      {item.info}
-      </div>
-    )}
-  </div>
+const TextEntry = ({value, onChange}) => 
+  <textarea className='text form-control'
+    value={value}
+    onChange={onChange}>
+    </textarea>
 
+
+// const List = ({list, onNoteClick}) => 
+//   <div className="notes d-flex flex-column">
+//     {list.map(item => 
+//       <div className="note mt-1 p-1 border rounded"
+//         onClick={() => onNoteClick(item)}>
+//       {item.info}
+//       </div>
+//     )}
+//   </div>
+
+  // {this.state.notesList.map(item => 
+  //               <div className="note mt-1 p-1 border rounded"
+  //                 onClick={() => this.displayNote(item)}>
+  //                 {item.info}
+  //               </div>
+  //             )}
+
+const List = ({list, onClick}) =>
+  <div className = 'notes d-flex flex-column'>
+    {list.map(item =>
+      <div className="note mt-1 p-1 border rounded"
+        onClick={() => onClick(item)}>
+        {item.info}
+      </div>
+      )}
+  </div>
 
 export default App;

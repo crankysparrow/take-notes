@@ -1,6 +1,14 @@
-body {
-  padding-top: 20px;
+.app {
+  max-height: 100vh;
+  min-height: 100vh;
+  border: 1px solid black;
+  overflow: scroll;
 }
+
+.content {
+  height: 100%;
+}
+
 .note {
   overflow: hidden;
   height: 100px;
@@ -8,4 +16,15 @@ body {
 
 textarea.form-control {
   height: 100%;
+  border: none;
+  resize: none;
+}
+
+.form-control:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.buttons {
+  height: 50px;
 }
