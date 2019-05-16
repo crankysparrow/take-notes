@@ -22,7 +22,7 @@ class App extends Component {
     this.state = {
       notesList,
       firstType,
-      textValue: '',
+      textValue: 'Type here to create a new note! Notes will be saved in your browser\'s local storage.',
       IDList,
       currentID: -1,
     }
@@ -106,7 +106,10 @@ class App extends Component {
     return (
       <div className="app container d-flex flex-column">
         
-        <div className="row d-flex justify-content-end border-bottom py-2">
+        <div className="row d-flex justify-content-between align-items-center p-2 topbar">
+              <div className="col">
+                <h3><i class="far fa-sticky-note"></i>  Take Notes</h3>
+              </div>
               <div className="col-auto">
                 <Button onClick={this.newButton} 
                 children='New Note' />
@@ -122,7 +125,7 @@ class App extends Component {
                 list={this.state.notesList} />
             </div>
             
-            <div className="col">
+            <div className="col bignote">
                 <TextEntry value={this.state.textValue}
                   onChange={this.onType} />
             </div>
