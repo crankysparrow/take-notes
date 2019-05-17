@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
 import './App.css';
 
-let notesList = JSON.parse(localStorage.getItem('list')) || [];
+let firstNote = {id: 0,
+                info: 'Welcome to the note app! Notes will be saved in your browser\'s local storage. :)' }
 
+let notesList = JSON.parse(localStorage.getItem('list')) || [];
+if (!notesList.length){
+  notesList.push(firstNote);
+}
+console.log(notesList);
+let textValue = notesList[0].info;
 let firstType = true;
+let currentID = notesList[0] ? notesList[0].id : -1;
 
 function getIDList(list) {
   let res = [];
@@ -22,17 +30,40 @@ class App extends Component {
     this.state = {
       notesList,
       firstType,
-      textValue: 'Type here to create a new note! Notes will be saved in your browser\'s local storage.',
+      textValue,
       IDList,
-      currentID: -1,
+      currentID,
     }
 
     this.onType = this.onType.bind(this);
-    this.newButton = this.newButton.bind(this);
     this.displayNote = this.displayNote.bind(this);
     this.deleteNote = this.deleteNote.bind(this);
+    this.createNewNote = this.createNewNote.bind(this);
   }
 
+  createNewNote() {
+    let list = this.state.notesList;
+    let IDList = this.state.IDList;
+
+    let id = list.length;
+    while (IDList.includes(id)) {
+      id++;
+    }
+    let newNote = {
+      id: id,
+      info: '',
+    };
+    IDList.push(id);
+    list.push(newNote);
+
+    this.setState({
+      currentID: id,
+      notesList: list,
+      IDList: IDList,
+      textValue: '',
+    })
+
+  }
 
   onType(event) {
     let list = this.state.notesList;
@@ -40,14 +71,7 @@ class App extends Component {
     let current = this.state.currentID;
 
     if (current === -1){
-      let id = list.length;
-      while (IDList.includes(id)){
-        id++;
-      }
-      let newNote = {id: id,};
-      IDList.push(id);
-      list.push(newNote);
-      current = id;
+      return this.createNewNote();
     }
 
     for (let item of list) {
@@ -57,7 +81,6 @@ class App extends Component {
     }
 
     localStorage.setItem('list', JSON.stringify(list));
-    console.log(localStorage);
 
     this.setState({ 
       notesList: list,
@@ -65,13 +88,6 @@ class App extends Component {
       IDList: IDList,
       textValue: event.target.value, 
     });
-  }
-
-  newButton(){
-    this.setState({
-      textValue: '',
-      currentID: -1,
-    })
   }
 
   displayNote(item){
@@ -102,17 +118,19 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state.IDList);
+    console.log(this.state.currentID);
     return (
       <div className="app container d-flex flex-column">
         
         <div className="row d-flex justify-content-between align-items-center p-2 topbar">
               <div className="col">
-                <h3><i class="far fa-sticky-note"></i>  Take Notes</h3>
+                <h3><i className="far fa-sticky-note"></i>  Take Notes</h3>
               </div>
               <div className="col-auto">
-                <Button onClick={this.newButton} 
+                <Button onClick={this.createNewNote} 
                 children='New Note' />
+              </div>
+              <div className="col-auto">
                 <Button onClick={this.deleteNote}
                 children='Delete Current Note' />
               </div>
@@ -120,9 +138,10 @@ class App extends Component {
 
           <div className="row flex-grow-1">
 
-            <div className="col-4 border-right px-0">
-              <List onClick={this.displayNote}
-                list={this.state.notesList} />
+            <div className="col-4 px-0">
+              <NoteList onClick={this.displayNote}
+                list={this.state.notesList} 
+                current={this.state.currentID}/>
             </div>
             
             <div className="col bignote">
@@ -151,13 +170,21 @@ const TextEntry = ({value, onChange}) =>
     onChange={onChange}>
     </textarea>
 
-const List = ({list, onClick}) =>
+const NoteList = ({list, onClick, current}) =>
   <div className = 'notes d-flex flex-column px-0'>
-    {list.map(item =>
-      <div className="note mt-1 mx-0 px-1 border-bottom"
-        onClick={() => onClick(item)}>
-        {item.info}
-      </div>
+    {list.map(item => {
+
+      let noteClass = item.id === current ? 
+        "note mx-0 p-1 border-bottom currentnote" 
+      : "note mx-0 p-1 border-bottom";
+
+      return (
+        <div className={noteClass}
+          onClick={() => onClick(item)}>
+          {item.info}
+        </div>
+      )
+    }
       )}
   </div>
 

@@ -3,12 +3,13 @@
   min-height: 100vh;
   border: 1px solid #484D6D;
   overflow: scroll;
-  color: #30344F;
   background-color: #EFF0F7;
+  color: black;
 }
 
 h3 {
-  text-shadow: 0 0 .5px #484D6D ;
+  text-shadow: 0 0 .5px #484D6D;
+  color: #30344F;
 }
 
 .content {
@@ -24,11 +25,11 @@ textarea.form-control {
   height: 100%;
   border: none;
   resize: none;
-  color: #484D6D;
 }
 
 .bignote, .form-control {
   background-color: #D3D5E4;
+  color: black;
 }
 
 .bignote {
@@ -39,6 +40,7 @@ textarea.form-control {
   outline: none;
   box-shadow: none;
   background-color: #D3D5E4;
+  color: black;
 }
 
 .topbar {
@@ -48,4 +50,8 @@ textarea.form-control {
 button {
   background-color: #484D6D;
   color: #DFE2F4;
+}
+
+.currentnote {
+  background-color: #C0C2D0;
 }
