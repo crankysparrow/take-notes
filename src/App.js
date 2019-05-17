@@ -5,13 +5,16 @@ let firstNote = {id: 0,
                 info: 'Welcome to the note app! Notes will be saved in your browser\'s local storage. :)' }
 
 let notesList = JSON.parse(localStorage.getItem('list')) || [];
-if (!notesList.length){
-  notesList.push(firstNote);
-}
-console.log(notesList);
+  if (!notesList.length){
+    notesList.push(firstNote);
+  }
+  if (notesList.length === 1 && notesList[0].info === ''){
+    notesList = [];
+    notesList.push(firstNote);
+  }
 let textValue = notesList[0].info;
 let firstType = true;
-let currentID = notesList[0] ? notesList[0].id : -1;
+let currentID = notesList[0].id;
 
 function getIDList(list) {
   let res = [];
@@ -21,12 +24,10 @@ function getIDList(list) {
 
 var IDList = getIDList(notesList);
 
-
 class App extends Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       notesList,
       firstType,
@@ -35,44 +36,25 @@ class App extends Component {
       currentID,
     }
 
+    this.text = React.createRef();
     this.onType = this.onType.bind(this);
     this.displayNote = this.displayNote.bind(this);
     this.deleteNote = this.deleteNote.bind(this);
     this.createNewNote = this.createNewNote.bind(this);
+    this.newButton = this.newButton.bind(this);
   }
 
-  createNewNote() {
-    let list = this.state.notesList;
-    let IDList = this.state.IDList;
+  componentDidMount() {
+    this.text.current.focus();
+  }
 
-    let id = list.length;
-    while (IDList.includes(id)) {
-      id++;
-    }
-    let newNote = {
-      id: id,
-      info: '',
-    };
-    IDList.push(id);
-    list.push(newNote);
-
-    this.setState({
-      currentID: id,
-      notesList: list,
-      IDList: IDList,
-      textValue: '',
-    })
-
+  componentDidUpdate(){
+    this.text.current.focus();
   }
 
   onType(event) {
     let list = this.state.notesList;
-    let IDList = this.state.IDList;
     let current = this.state.currentID;
-
-    if (current === -1){
-      return this.createNewNote();
-    }
 
     for (let item of list) {
       if (item.id === current){
@@ -81,11 +63,8 @@ class App extends Component {
     }
 
     localStorage.setItem('list', JSON.stringify(list));
-
     this.setState({ 
       notesList: list,
-      currentID: current,
-      IDList: IDList,
       textValue: event.target.value, 
     });
   }
@@ -97,6 +76,12 @@ class App extends Component {
     })
   }
 
+  newButton(){
+    let list = this.state.notesList;
+    let IDList = this.state.IDList;
+    return this.createNewNote(list, IDList);
+  }
+
   deleteNote(){
     let list = this.state.notesList;
     let IDList = this.state.IDList;
@@ -104,30 +89,54 @@ class App extends Component {
 
     list = list.filter(item => 
       item.id !== id);
-    
     IDList = IDList.filter(num => num !== id);
+
+    if (!list.length){
+      return this.createNewNote(list, IDList);
+    }
 
     localStorage.setItem('list', JSON.stringify(list));
 
     this.setState({
       IDList: IDList,
       notesList: list,
+      currentID: list[0].id,
+      textValue: list[0].info,
+    })
+  }
+
+  createNewNote(list, IDList) {
+    let id = list.length;
+    while (IDList.includes(id)) {
+      id++;
+    }
+    let newNote = {
+      id: id,
+      info: '',
+    };
+    IDList.push(id);
+    list.push(newNote);
+
+    localStorage.setItem('list', JSON.stringify(list));
+    this.setState({
+      currentID: id,
+      notesList: list,
+      IDList: IDList,
       textValue: '',
-      currentID: -1,
     })
   }
 
   render() {
-    console.log(this.state.currentID);
+    console.log(this.state.notesList);
     return (
-      <div className="app container d-flex flex-column">
+      <div className="app container d-flex flex-column align-items-stretch">
         
         <div className="row d-flex justify-content-between align-items-center p-2 topbar">
               <div className="col">
                 <h3><i className="far fa-sticky-note"></i>  Take Notes</h3>
               </div>
               <div className="col-auto">
-                <Button onClick={this.createNewNote} 
+                <Button onClick={this.newButton} 
                 children='New Note' />
               </div>
               <div className="col-auto">
@@ -136,20 +145,17 @@ class App extends Component {
               </div>
         </div>
 
-          <div className="row flex-grow-1">
+        <div className="row main">
 
-            <div className="col-4 px-0">
-              <NoteList onClick={this.displayNote}
-                list={this.state.notesList} 
-                current={this.state.currentID}/>
-            </div>
-            
-            <div className="col bignote">
-                <TextEntry value={this.state.textValue}
-                  onChange={this.onType} />
-            </div>
-            
-          </div>
+          <NoteList onClick={this.displayNote}
+            list={this.state.notesList} 
+            current={this.state.currentID}/>
+        
+            <TextEntry value={this.state.textValue}
+              onChange={this.onType}
+              reference={this.text} />
+          
+        </div>
         </div>
 
     );
@@ -164,14 +170,18 @@ const Button = ({ onClick, className='', children }) =>
     {children}
     </button>
 
-const TextEntry = ({value, onChange}) => 
-  <textarea className='text form-control'
-    value={value}
-    onChange={onChange}>
+const TextEntry = ({value, onChange, reference}) => 
+  <div className="col bignote">
+    <textarea className='text form-control'
+      value={value}
+      onChange={onChange}
+      autoFocus={'autofocus'}
+      ref={reference}>
     </textarea>
+  </div>
 
 const NoteList = ({list, onClick, current}) =>
-  <div className = 'notes d-flex flex-column px-0'>
+  <div className = 'notes d-flex flex-column px-0 col-4'>
     {list.map(item => {
 
       let noteClass = item.id === current ? 
