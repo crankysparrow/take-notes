@@ -129,34 +129,34 @@ class App extends Component {
   render() {
     console.log(this.state.notesList);
     return (
-      <div className="app container d-flex flex-column align-items-stretch">
-        
-        <div className="row d-flex justify-content-between align-items-center p-2 topbar">
-              <div className="col">
-                <h3><i className="far fa-sticky-note"></i>  Take Notes</h3>
-              </div>
-              <div className="col-auto">
-                <Button onClick={this.newButton} 
-                children='New Note' />
-              </div>
-              <div className="col-auto">
-                <Button onClick={this.deleteNote}
-                children='Delete Current Note' />
-              </div>
+      <div className="container h-100 d-flex flex-column border-dark">
+
+        <div className="row navbar bg-light navbar-light p-0">
+
+          <div className="col h3 mb-0 align-self-stretch" style={{ backgroundColor: '#edf7fc'}}>
+            <i className="far fa-sticky-note navbar-text"></i>  Take Notes
+          </div>
+          <div className="col-auto py-2 pl-5" style={{ backgroundColor: '#d5e0e6'}}>
+            <Button onClick={this.newButton}
+              children='New Note' 
+              className='btn btn-info mx-3' />
+
+            <Button onClick={this.deleteNote}
+              children='Delete Current Note'
+              className='btn btn-info' />
+          </div>
         </div>
 
-        <div className="row main">
-
+        <div className="row flex-grow-1">
           <NoteList onClick={this.displayNote}
-            list={this.state.notesList} 
-            current={this.state.currentID}/>
-        
-            <TextEntry value={this.state.textValue}
-              onChange={this.onType}
-              reference={this.text} />
-          
+            list={this.state.notesList}
+            current={this.state.currentID} />
+
+          <TextEntry value={this.state.textValue}
+            onChange={this.onType}
+            reference={this.text} />
         </div>
-        </div>
+      </div>
 
     );
   }
@@ -171,8 +171,8 @@ const Button = ({ onClick, className='', children }) =>
     </button>
 
 const TextEntry = ({value, onChange, reference}) => 
-  <div className="col bignote">
-    <textarea className='text form-control'
+  <div className="col bignote px-0">
+    <textarea className='note-input form-control h-100 border-top-0 border-bottom-0 rounded-0'
       value={value}
       onChange={onChange}
       autoFocus={'autofocus'}
@@ -181,12 +181,12 @@ const TextEntry = ({value, onChange, reference}) =>
   </div>
 
 const NoteList = ({list, onClick, current}) =>
-  <div className = 'notes d-flex flex-column px-0 col-4'>
+  <div className = 'notes col-4 align-self-stretch flex-grow-1 pl-0'>
     {list.map(item => {
 
       let noteClass = item.id === current ? 
-        "note mx-0 p-1 border-bottom currentnote" 
-      : "note mx-0 p-1 border-bottom";
+        "note p-1 border border-info shadow bg-white currentnote mb-1" 
+      : "note p-1 border border-info border-2 bg-white shadow-sm mb-1";
 
       return (
         <div className={noteClass}
