@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/take-notes/static/css/main.20f92c37.chunk.css",
+    "main.js": "/take-notes/static/js/main.4cb2f20e.chunk.js",
+    "main.js.map": "/take-notes/static/js/main.4cb2f20e.chunk.js.map",
+    "runtime~main.js": "/take-notes/static/js/runtime~main.064cfc67.js",
+    "runtime~main.js.map": "/take-notes/static/js/runtime~main.064cfc67.js.map",
+    "static/js/2.d8c4d936.chunk.js": "/take-notes/static/js/2.d8c4d936.chunk.js",
+    "static/js/2.d8c4d936.chunk.js.map": "/take-notes/static/js/2.d8c4d936.chunk.js.map",
+    "index.html": "/take-notes/index.html",
+    "precache-manifest.5bdc1dfa43945b5394410b52136d3dea.js": "/take-notes/precache-manifest.5bdc1dfa43945b5394410b52136d3dea.js",
+    "service-worker.js": "/take-notes/service-worker.js",
+    "static/css/main.20f92c37.chunk.css.map": "/take-notes/static/css/main.20f92c37.chunk.css.map"
+  }
+}
